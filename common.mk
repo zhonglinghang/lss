@@ -3,9 +3,11 @@ MFNAME = $(word 1, $(MAKEFILE_LIST))
 ifeq ($(DEBUG), 1)
 NAME = debug_$(MFNAME)
 CFLAGS += -O2 -g
+CPPFLAGS += -O2 -g
 else
 NAME = release_$(MFNAME)
 CFLAGS += -O2 -DNDEBUG
+CPPFLAGS += -O2 -g
 endif
 
 # tool chain
@@ -18,7 +20,9 @@ STRIP = @echo " strip  $@"; $(CROSS)strip
 
 SRCDIR := $(foreach dir, $(SRCSUBDIR), $(SRCPATH)/$(dir)) $(SRCPATH)
 
-SRCS_C := $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
+SRCS_C_TMP := $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
+# SRCS_C := $(patsubst %main.c,,${SRCS_C_TMP})
+SRCS_C := ${SRCS_C_TMP}
 SRCS_CPP := $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.cpp))
 
 OBJPATH := .obj_$(NAME)
@@ -49,6 +53,7 @@ endif
 all: start depends $(TARGET) install end
 
 start:
+	@echo [[[ Source $(SRCS_C) ]]]	
 	$(START_CMD)
 	@echo [[[ START $(TARGET) $(NAME) ]]]
 
